@@ -1,0 +1,36 @@
+/* styles.css */
+
+/* Estilos para la tabla */
+table {
+    width: 50%;               /* Ajusta el ancho de la tabla */
+    margin: 20px auto;        /* Centra la tabla en la página */
+    border-collapse: collapse;/* Elimina los espacios entre las celdas */
+}
+
+th, td {
+    padding: 2px 3px;        /* Espaciado dentro de las celdas */
+    text-align: left;         /* Alinea el texto a la izquierda */
+    border: 1px solid #ddd;  /* Agrega un borde suave a las celdas */
+}
+
+th {
+    
+    font-weight: bold;          /* Hace el texto de los encabezados en negrita */
+}
+
+
+
+/* Estilo para la fila al pasar el ratón */
+tr:hover {
+    background-color: #eaeaea;  /* Cambio de color de fondo de la fila */
+}
+
+/* Asegurarse de que el contenido de las celdas cambie de color al pasar el ratón */
+tr:hover td {
+    background-color: #eaeaea;  /* Cambio de fondo para cada celda dentro de la fila */
+}
+
+/* También puedes cambiar el color del texto, si lo deseas */
+tr:hover td, tr:hover th {
+    color: #333; /* Cambia el color del texto a un color oscuro al pasar el ratón */
+}
