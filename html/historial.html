@@ -67,7 +67,7 @@
               <span class="nav-icon">
                 <i class="material-icons">&#xe5c3;</i>
               </span>
-              <span class="nav-text">Historial</span>
+              <span class="nav-text">Offline</span>
             </a>
           </li>
 
@@ -87,28 +87,6 @@
                 <i class="material-icons">&#xe8d2;</i>
               </span>
               <span class="nav-text">Calendario</span>
-            </a>
-          </li>
-
-          <li class="nav-header hidden-folded">
-            <small class="text-muted">Componentes</small>
-          </li>
-
-          <li>
-            <a href="form.wizard.html">
-              <span class="nav-icon">
-                <i class="material-icons">&#xe1b8;</i>
-              </span>
-              <span class="nav-text">libre</span>
-            </a>
-          </li>
-
-          <li>
-            <a href="docs.html">
-              <span class="nav-icon">
-                <i class="material-icons">&#xe8f0;</i>
-              </span>
-              <span class="nav-text">Libre</span>
             </a>
           </li>
         </ul>
@@ -193,43 +171,38 @@
 
         
 <body>
-    <table>
-        <thead>
-            <tr id="table-header"></tr>
-        </thead>
-        <tbody id="table-body"></tbody>
-    </table>
+    <h1>Dispositivos Offline</h1>
+    <ul id="offline-list"></ul>
 
     <script>
-        // Fetch data from the backend
-        fetch('http://localhost:3000/registros')
-            .then(response => response.json())
-            .then(data => {
-                // Populate table headers
-                const headerRow = document.getElementById('table-header');
-                if (data.length > 0) {
-                    Object.keys(data[0]).forEach(key => {
-                        const th = document.createElement('th');
-                        th.textContent = key;
-                        headerRow.appendChild(th);
-                    });
-                }
+        // Función para cargar la lista de dispositivos offline desde localStorage
+        function cargarDispositivosOffline() {
+            const offlineList = document.getElementById('offline-list');
+            const dispositivosOffline = JSON.parse(localStorage.getItem('dispositivosOffline')) || [];
 
-                // Populate table rows
-                const tableBody = document.getElementById('table-body');
-                data.forEach(row => {
-                    const tr = document.createElement('tr');
-                    Object.values(row).forEach(value => {
-                        const td = document.createElement('td');
-                        td.textContent = value;
-                        tr.appendChild(td);
-                    });
-                    tableBody.appendChild(tr);
-                });
-            })
-            .catch(error => console.error('Error al cargar los datos:', error));
+            // Limpiar la lista antes de agregar los nuevos elementos
+            offlineList.innerHTML = '';
+
+            // Agregar cada dispositivo offline a la lista
+            dispositivosOffline.forEach(deviceId => {
+                const li = document.createElement('li');
+                li.textContent = deviceId;
+                offlineList.appendChild(li);
+            });
+        }
+
+        // Cargar la lista al cargar la página
+        cargarDispositivosOffline();
+
+        // Escuchar cambios en localStorage para actualizar la lista en tiempo real
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'dispositivosOffline') {
+                cargarDispositivosOffline();
+            }
+        });
     </script>
 </body>
+
 
   <div id="switcher">
     <div class="switcher box-color dark-white text-color" id="sw-theme">
