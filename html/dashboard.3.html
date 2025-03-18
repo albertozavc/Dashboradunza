@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="../assets/styles/font.css" type="text/css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    #map { height: 600px; }
+    #map { height: 700px; }
   </style>
 </head>
 <body>
@@ -55,7 +55,7 @@
               <span class="nav-icon">
                 <i class="material-icons">&#xe5c3;</i>
               </span>
-              <span class="nav-text">Historial</span>
+              <span class="nav-text">Offline</span>
             </a>
           </li>
           <li>
@@ -79,22 +79,6 @@
           <li class="nav-header hidden-folded">
             <small class="text-muted">Componentes</small>
           </li>
-          <li>
-            <a href="form.wizard.html">
-              <span class="nav-icon">
-                <i class="material-icons">&#xe1b8;</i>
-              </span>
-              <span class="nav-text">libre</span>
-            </a>
-          </li>
-          <li>
-            <a href="docs.html">
-              <span class="nav-icon">
-                <i class="material-icons">&#xe8f0;</i>
-              </span>
-              <span class="nav-text">Libre</span>
-            </a>
-          </li>
         </ul>
       </nav>
     </div>
@@ -103,7 +87,7 @@
     </div>
   </div>
 </div>
-  <div id="content" class="app-content box-shadow-z3" role="main">
+    <div id="content" class="app-content box-shadow-z3" role="main">
     <div class="app-header white box-shadow">
         <div class="navbar navbar-toggleable-sm flex-row align-items-center">
             <a data-toggle="modal" data-target="#aside" class="hidden-lg-up mr-3">
@@ -276,107 +260,139 @@
 
 <script>
   // Inicializar el mapa
-  const map = L.map('map').setView([19.7027, -101.1827], 6); // Centrar en una ubicación inicial
+const map = L.map('map').setView([19.7027, -101.1827], 6);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+// Agregar capa de mapa base
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
-  }).addTo(map);
+}).addTo(map);
 
-  // Objeto para almacenar los marcadores
-  const markers = {};
+// Objeto para almacenar los marcadores
+const markers = {};
 
-  // Función para obtener el estado del dispositivo desde Heroku
-  async function obtenerEstadoDispositivo(deviceId) {
-      try {
-          const response = await fetch(`https://mi-servidor-heartbeat-1a3a85a58124.herokuapp.com/api/status/${deviceId}`);
-          if (!response.ok) throw new Error("Dispositivo no encontrado");
+// Lista de dispositivos monitoreados
+const dispositivos = [
+    "dispositivo_123", "ServidorAeroColima", "ServidorTepeyac", "ServidorMoroleon",
+    "ServidorTacubaya", "ServidorSatelite", "ServidorAzcapotzalco", "ServidorAeropuerto",
+    "ServidorCarrizal", "ServidorHoracio", "ServidorSanManuel", "ServidorPeriferico",
+    "ServidorSamsOaxaca", "ServidorFerrocarril", "ServidorBuenavista", "ServidorMarianoEscobedo",
+    "ServidorLaRaza", "ServidorZitacuaro", "ServidorTlalpan", "ServidorSuperamaVillaHermosa",
+    "ServidorAdagio", "ServidorComboCuautitlan", "ServidorDorada1", "ServidorSamsCuautitlan1DeMayo",
+    "ServidorComitan", "ServidorKomplex", "ServidorParoli", "ServidorTlaxcala", "ServidorPirules",
+    "ServidorForo4", "ServidorTijuana", "ServidorViaSanAngel", "ServidorPlazaAkia", "ServidorLilas",
+    "ServidorAeroCDObregon"
+];
 
-          const data = await response.json();
-          console.log(`📡 Dispositivo ${deviceId}:`, data);
+// Fijar el total de dispositivos según la cantidad en la lista
+const totalDispositivos = dispositivos.length;
+document.getElementById("total-count").textContent = totalDispositivos;
 
-          actualizarMarcador(deviceId, data.latLng.lat, data.latLng.lng, data.status);
-      } catch (error) {
-          console.error("Error al obtener el estado:", error);
-      }
-  }
+// Función para obtener el estado del dispositivo desde el servidor
+async function obtenerEstadoDispositivo(deviceId) {
+    try {
+        const response = await fetch(`https://mi-servidor-heartbeat-1a3a85a58124.herokuapp.com/api/status/${deviceId}`);
+        if (!response.ok) throw new Error("Dispositivo no encontrado");
 
-  // Función para actualizar los marcadores en el mapa
-  function actualizarMarcador(deviceId, lat, lng, status) {
-      // Verificar si el marcador ya existe
-      if (markers[deviceId]) {
-          // Actualizar la posición y color del marcador existente
-          markers[deviceId].setLatLng([lat, lng]);
-          markers[deviceId].setStyle({
-              fillColor: status === "online" ? "green" : "red"
-          });
-      } else {
-          // Crear un nuevo marcador si no existe
-          markers[deviceId] = L.circleMarker([lat, lng], {
-              radius: 8, 
-              fillColor: status === "online" ? "green" : "red", 
-              color: "#000",
-              weight: 1,
-              opacity: 1,
-              fillOpacity: 0.8
-          }).addTo(map);
+        const data = await response.json();
+        console.log(`📡 Dispositivo ${deviceId}:`, data);
 
-          // Agregar información
-          markers[deviceId].bindPopup(`Dispositivo: ${deviceId}<br>Estado: ${status}`);
-      }
+        actualizarMarcador(deviceId, data.latLng.lat, data.latLng.lng, data.status);
+    } catch (error) {
+        console.error(`Error al obtener estado de ${deviceId}:`, error);
+    }
+}
 
-      // Después de actualizar los marcadores, recalcular los contadores
-      actualizarContadores();
-  }
+// Función para mostrar una notificación emergente
+// Función para mostrar una notificación emergente con el nombre del dispositivo
+function mostrarNotificacion(deviceId) {
+    Swal.fire({
+        title: "⚠️ Dispositivo fuera de línea",
+        text: `El dispositivo "${deviceId}" se ha desconectado.`,
+        icon: "warning",
+        confirmButtonText: "Entendido",
+        timer: 20000,
+        timerProgressBar: true
+    });
+}
 
-  // Función para actualizar los contadores de dispositivos
-  function actualizarContadores() {
-      const total = Object.keys(markers).length;
-      const online = Object.values(markers).filter(m => m.options.fillColor === "green").length;
-      const offline = total - online;
 
-      document.getElementById("total-count").textContent = total;
-      document.getElementById("online-count").textContent = online;
-      document.getElementById("offline-count").textContent = offline;
-  }
 
-  // Intervalo para actualizar el estado cada 5 segundos
-  setInterval(() => {
-      obtenerEstadoDispositivo("dispositivo_123");  
-      obtenerEstadoDispositivo("ServidorAeroColima");  
-      obtenerEstadoDispositivo("ServidorTepeyac");  
-      obtenerEstadoDispositivo("ServidorMoroleon");  
-      obtenerEstadoDispositivo("ServidorTacubaya");  
-      obtenerEstadoDispositivo("ServidorSatelite");  
-      obtenerEstadoDispositivo("ServidorAzcapotzalco"); 
-      obtenerEstadoDispositivo("ServidorAeropuerto");  
-      obtenerEstadoDispositivo("ServidorCarrizal");  
-      obtenerEstadoDispositivo("ServidorHoracio"); 
-      obtenerEstadoDispositivo("ServidorSanManuel");  
-      obtenerEstadoDispositivo("ServidorPeriferico");  
-      obtenerEstadoDispositivo("ServidorSamsOaxaca");
-      obtenerEstadoDispositivo("ServidorFerrocarril");  
-      obtenerEstadoDispositivo("ServidorBuenavista");  
-      obtenerEstadoDispositivo("ServidorMarianoEscobedo"); 
-      obtenerEstadoDispositivo("ServidorLaRaza");  
-      obtenerEstadoDispositivo("ServidorZitacuaro");  
-      obtenerEstadoDispositivo("ServidorTlalpan"); 
-      obtenerEstadoDispositivo("ServidorSuperamaVillaHermosa");  
-      obtenerEstadoDispositivo("ServidorAdagio");  
-      obtenerEstadoDispositivo("ServidorComboCuautitlan"); 
-      obtenerEstadoDispositivo("ServidorDorada1");  
-      obtenerEstadoDispositivo("ServidorSamsCuautitlan1DeMayo");  
-      obtenerEstadoDispositivo("ServidorComitan"); 
-      obtenerEstadoDispositivo("ServidorKomplex");  
-      obtenerEstadoDispositivo("ServidorParoli");  
-      obtenerEstadoDispositivo("ServidorTlaxcala");  
-      obtenerEstadoDispositivo("ServidorPirules");  
-      obtenerEstadoDispositivo("ServidorForo4");  
-      obtenerEstadoDispositivo("ServidorTijuana");
-      obtenerEstadoDispositivo("ServidorViaSanAngel");  
-      obtenerEstadoDispositivo("ServidorPlazaAkia");  
-      obtenerEstadoDispositivo("ServidorLilas");   
-      obtenerEstadoDispositivo("ServidorAeroCDObregon"); 
-  }, 5000);
+// Modificación en la función actualizarMarcador para detectar cambios de estado
+function actualizarMarcador(deviceId, lat, lng, status) {
+    const nuevoColor = status === "online" ? "green" : "red";
+
+    if (markers[deviceId]) {
+        const colorAnterior = markers[deviceId].options.fillColor;
+
+        // Verificar si el dispositivo cambió de online a offline
+        if (colorAnterior === "green" && nuevoColor === "red") {
+    mostrarNotificacion(deviceId);  // Llamar la notificación cuando cambia a offline
+}
+
+        // Si el popup está abierto, lo cerramos antes de actualizar
+        if (markers[deviceId].isPopupOpen()) {
+            markers[deviceId].closePopup();
+        }
+
+        // Actualizar posición y color
+        markers[deviceId].setLatLng([lat, lng]);
+        markers[deviceId].setStyle({
+            fillColor: nuevoColor
+        });
+
+        // Actualizar contenido del popup sin necesidad de re-binderlo
+        markers[deviceId].setPopupContent(`Dispositivo: ${deviceId}<br>Estado: ${status}`);
+    } else {
+        // Crear un nuevo marcador si no existe
+        markers[deviceId] = L.circleMarker([lat, lng], {
+            radius: 8,
+            fillColor: nuevoColor,
+            color: "#000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(map);
+
+        // Asignar popup con la información actualizada
+        markers[deviceId].bindPopup(`Dispositivo: ${deviceId}<br>Estado: ${status}`);
+    }
+
+    // Actualizar contadores
+    actualizarContadores();
+}
+
+// Pedir permiso para notificaciones al cargar la página
+document.addEventListener("DOMContentLoaded", () => {
+    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+        Notification.requestPermission();
+    }
+});
+
+
+// Función para actualizar los contadores de dispositivos en línea y fuera de línea
+// Función para actualizar los contadores de dispositivos en línea y fuera de línea
+function actualizarContadores() {
+    const online = Object.values(markers).filter(m => m.options.fillColor === "green").length;
+    const offline = totalDispositivos - online; // Total fijo - en línea
+
+    document.getElementById("online-count").textContent = online;
+    document.getElementById("offline-count").textContent = offline;
+
+    // Obtener la lista de dispositivos offline
+    const dispositivosOffline = dispositivos.filter(deviceId => {
+        const marker = markers[deviceId];
+        return marker && marker.options.fillColor === "red";
+    });
+
+    // Guardar la lista de dispositivos offline en localStorage
+    localStorage.setItem('dispositivosOffline', JSON.stringify(dispositivosOffline));
+}
+
+// Intervalo para actualizar el estado de los dispositivos cada 5 segundos
+setInterval(() => {
+    dispositivos.forEach(obtenerEstadoDispositivo);
+}, 5000);
+
 </script>
 
   </script>
@@ -400,5 +416,6 @@
   <script src="scripts/app.js"></script>
   <script src="../libs/jquery/jquery-pjax/jquery.pjax.js"></script>
   <script src="scripts/ajax.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
