@@ -305,6 +305,8 @@ async function obtenerEstadoDispositivo(deviceId) {
 // Función para mostrar una notificación emergente
 // Función para mostrar una notificación emergente con el nombre del dispositivo
 function mostrarNotificacion(deviceId) {
+  const audio = new Audio('../assets/images/alerta.mp3');  
+    audio.play();  // Reproducir el sonido
     Swal.fire({
         title: "⚠️ Dispositivo fuera de línea",
         text: `El dispositivo "${deviceId}" se ha desconectado.`,
