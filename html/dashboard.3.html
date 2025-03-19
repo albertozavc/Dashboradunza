@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="../assets/styles/font.css" type="text/css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    #map { height: 800px; }
+    #map { height: 700px; }
   </style>
 </head>
 <body>
@@ -304,19 +304,70 @@ async function obtenerEstadoDispositivo(deviceId) {
 
 // Función para mostrar una notificación emergente
 // Función para mostrar una notificación emergente con el nombre del dispositivo
-function mostrarNotificacion(deviceId) {
-  const audio = new Audio('../assets/images/alerta.mp3');  
-    audio.play();  // Reproducir el sonido
+const estadoAnterior = {};
+
+// Función para obtener el estado del dispositivo desde el servidor
+async function obtenerEstadoDispositivo(deviceId) {
+    try {
+        const response = await fetch(`https://mi-servidor-heartbeat-1a3a85a58124.herokuapp.com/api/status/${deviceId}`);
+        if (!response.ok) throw new Error("Dispositivo no encontrado");
+
+        const data = await response.json();
+        console.log(`📡 Dispositivo ${deviceId}:`, data);
+
+        const nuevoEstado = data.status; // "online" o "offline"
+        const lat = data.latLng.lat;
+        const lng = data.latLng.lng;
+
+        // Verificar si el estado cambió respecto al estado anterior
+        if (estadoAnterior[deviceId] !== undefined && estadoAnterior[deviceId] !== nuevoEstado) {
+            if (nuevoEstado === "offline") {
+                mostrarNotificacionOffline(deviceId); // Si se desconectó
+            } else {
+                mostrarNotificacionOnline(deviceId); // Si volvió a conectarse
+            }
+        }
+
+        // Guardar el nuevo estado
+        estadoAnterior[deviceId] = nuevoEstado;
+
+        // Actualizar el marcador en el mapa
+        actualizarMarcador(deviceId, lat, lng, nuevoEstado);
+
+    } catch (error) {
+        console.error(`Error al obtener estado de ${deviceId}:`, error);
+    }
+}
+
+// Notificación cuando un dispositivo se pone OFFLINE
+function mostrarNotificacionOffline(deviceId) {
+    const audioOffline = new Audio('../assets/images/alerta.mp3'); // 🔊 Sonido para OFFLINE
+    audioOffline.play();  
+
     Swal.fire({
         title: "⚠️ Dispositivo fuera de línea",
         text: `El dispositivo "${deviceId}" se ha desconectado.`,
         icon: "warning",
         confirmButtonText: "Entendido",
-        timer: 20000,
+        timer: 30000,
         timerProgressBar: true
     });
 }
 
+// Notificación cuando un dispositivo vuelve ONLINE
+function mostrarNotificacionOnline(deviceId) {
+    const audioOnline = new Audio('../assets/images/alertaoffline.mp3'); // 🔊 Sonido para ONLINE
+    audioOnline.play();  
+
+    Swal.fire({
+        title: "✅ Dispositivo en línea",
+        text: `El dispositivo "${deviceId}" se ha reconectado.`,
+        icon: "success",
+        confirmButtonText: "Entendido",
+        timer: 30000,
+        timerProgressBar: true
+    });
+}
 
 
 // Modificación en la función actualizarMarcador para detectar cambios de estado
