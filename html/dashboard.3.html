@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="../assets/styles/font.css" type="text/css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    #map { height: 700px; }
+    #map { height: 800px; }
   </style>
 </head>
 <body>
@@ -259,7 +259,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-  // Inicializar el mapa
+// Inicializar el mapa
 const map = L.map('map').setView([19.7027, -101.1827], 6);
 
 // Agregar capa de mapa base
@@ -287,23 +287,7 @@ const dispositivos = [
 const totalDispositivos = dispositivos.length;
 document.getElementById("total-count").textContent = totalDispositivos;
 
-// Función para obtener el estado del dispositivo desde el servidor
-async function obtenerEstadoDispositivo(deviceId) {
-    try {
-        const response = await fetch(`https://mi-servidor-heartbeat-1a3a85a58124.herokuapp.com/api/status/${deviceId}`);
-        if (!response.ok) throw new Error("Dispositivo no encontrado");
-
-        const data = await response.json();
-        console.log(`📡 Dispositivo ${deviceId}:`, data);
-
-        actualizarMarcador(deviceId, data.latLng.lat, data.latLng.lng, data.status);
-    } catch (error) {
-        console.error(`Error al obtener estado de ${deviceId}:`, error);
-    }
-}
-
-// Función para mostrar una notificación emergente
-// Función para mostrar una notificación emergente con el nombre del dispositivo
+// Estado previo de cada dispositivo
 const estadoAnterior = {};
 
 // Función para obtener el estado del dispositivo desde el servidor
@@ -319,20 +303,23 @@ async function obtenerEstadoDispositivo(deviceId) {
         const lat = data.latLng.lat;
         const lng = data.latLng.lng;
 
-        // Verificar si el estado cambió respecto al estado anterior
+        // Si el estado cambia, mostramos notificación
         if (estadoAnterior[deviceId] !== undefined && estadoAnterior[deviceId] !== nuevoEstado) {
             if (nuevoEstado === "offline") {
-                mostrarNotificacionOffline(deviceId); // Si se desconectó
+                mostrarNotificacionOffline(deviceId);
             } else {
-                mostrarNotificacionOnline(deviceId); // Si volvió a conectarse
+                mostrarNotificacionOnline(deviceId);
             }
         }
 
-        // Guardar el nuevo estado
+        // Guardamos el nuevo estado
         estadoAnterior[deviceId] = nuevoEstado;
 
         // Actualizar el marcador en el mapa
         actualizarMarcador(deviceId, lat, lng, nuevoEstado);
+
+        // Actualizar contadores en tiempo real
+        actualizarContadores();
 
     } catch (error) {
         console.error(`Error al obtener estado de ${deviceId}:`, error);
@@ -369,34 +356,27 @@ function mostrarNotificacionOnline(deviceId) {
     });
 }
 
-
-// Modificación en la función actualizarMarcador para detectar cambios de estado
+// Función para actualizar el marcador en el mapa
 function actualizarMarcador(deviceId, lat, lng, status) {
     const nuevoColor = status === "online" ? "green" : "red";
 
     if (markers[deviceId]) {
-        const colorAnterior = markers[deviceId].options.fillColor;
-
-        // Verificar si el dispositivo cambió de online a offline
-        if (colorAnterior === "green" && nuevoColor === "red") {
-    mostrarNotificacion(deviceId);  // Llamar la notificación cuando cambia a offline
-}
-
         // Si el popup está abierto, lo cerramos antes de actualizar
         if (markers[deviceId].isPopupOpen()) {
             markers[deviceId].closePopup();
         }
 
-        // Actualizar posición y color
+        // Actualizar la posición y el color del marcador
         markers[deviceId].setLatLng([lat, lng]);
         markers[deviceId].setStyle({
             fillColor: nuevoColor
         });
 
-        // Actualizar contenido del popup sin necesidad de re-binderlo
+        // Actualizar contenido del popup
         markers[deviceId].setPopupContent(`Dispositivo: ${deviceId}<br>Estado: ${status}`);
+
     } else {
-        // Crear un nuevo marcador si no existe
+        // Si no existe el marcador, crearlo
         markers[deviceId] = L.circleMarker([lat, lng], {
             radius: 8,
             fillColor: nuevoColor,
@@ -409,24 +389,12 @@ function actualizarMarcador(deviceId, lat, lng, status) {
         // Asignar popup con la información actualizada
         markers[deviceId].bindPopup(`Dispositivo: ${deviceId}<br>Estado: ${status}`);
     }
-
-    // Actualizar contadores
-    actualizarContadores();
 }
 
-// Pedir permiso para notificaciones al cargar la página
-document.addEventListener("DOMContentLoaded", () => {
-    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-        Notification.requestPermission();
-    }
-});
-
-
-// Función para actualizar los contadores de dispositivos en línea y fuera de línea
 // Función para actualizar los contadores de dispositivos en línea y fuera de línea
 function actualizarContadores() {
     const online = Object.values(markers).filter(m => m.options.fillColor === "green").length;
-    const offline = totalDispositivos - online; // Total fijo - en línea
+    const offline = totalDispositivos - online;
 
     document.getElementById("online-count").textContent = online;
     document.getElementById("offline-count").textContent = offline;
@@ -440,6 +408,13 @@ function actualizarContadores() {
     // Guardar la lista de dispositivos offline en localStorage
     localStorage.setItem('dispositivosOffline', JSON.stringify(dispositivosOffline));
 }
+
+// Pedir permiso para notificaciones al cargar la página
+document.addEventListener("DOMContentLoaded", () => {
+    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+        Notification.requestPermission();
+    }
+});
 
 // Intervalo para actualizar el estado de los dispositivos cada 5 segundos
 setInterval(() => {
