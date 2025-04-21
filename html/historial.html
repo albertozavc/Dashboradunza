@@ -20,20 +20,43 @@
   <link rel="stylesheet" href="../assets/bootstrap/dist/css/bootstrap.min.css" type="text/css" />
   <link rel="stylesheet" href="../assets/styles/app.css" type="text/css" />
   <link rel="stylesheet" href="../assets/styles/font.css" type="text/css" />
+   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <style>
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    table, th, td {
-      border: 1px solid black;
-    }
-    th, td {
-      padding: 8px;
-      text-align: left;
-    }
-  </style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #dc2626;
+            margin-bottom: 20px;
+        }
+
+        #offline-list {
+            list-style: none;
+            padding: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #offline-list li {
+            background-color: #fee2e2;
+            color: #7f1d1d;
+            font-size: 1.25rem;
+            margin: 10px 0;
+            padding: 15px 20px;
+            border-left: 5px solid #dc2626;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
   <div class="app" id="app">
@@ -56,38 +79,39 @@
           <li>
             <a href="dashboard.3.html">
               <span class="nav-icon">
-                <i class="material-icons">&#xe3fc;</i>
+                <i class="material-icons">home</i>
               </span>
               <span class="nav-text">Principal</span>
             </a>
           </li>
-
           <li>
             <a href="historial.html">
               <span class="nav-icon">
-                <i class="material-icons">&#xe5c3;</i>
+                <i class="material-icons">desktop_access_disabled</i>
               </span>
               <span class="nav-text">Offline</span>
             </a>
           </li>
-
-         
           <li>
+
+            
             <a href="contact.html">
               <span class="nav-icon">
-                <i class="material-icons">&#xe8f0;</i>
+                <i class="material-icons">contacts</i>
               </span>
               <span class="nav-text">Directorio</span>
             </a>
           </li>
-
           <li>
             <a href="calendar.html">
               <span class="nav-icon">
-                <i class="material-icons">&#xe8d2;</i>
+                <i class="material-icons">calendar_month</i>
               </span>
               <span class="nav-text">Calendario</span>
             </a>
+          </li>
+          <li class="nav-header hidden-folded">
+            <small class="text-muted">Componentes</small>
           </li>
         </ul>
       </nav>
@@ -111,22 +135,16 @@
               <ul class="nav navbar-nav mr-auto">
                 <li class="nav-item dropdown">
                   <a class="nav-link" href data-toggle="dropdown">
-                    <i class="fa fa-fw fa-plus text-muted"></i>
-                    <span>ACCESSONE</span>
+                    <i class="material-icons">directions_car</i>
+                  <span>Parking México</span>
                   </a>
-                  <div ui-include="'../views/blocks/dropdown.new.html'"></div>
+                   <div ui-include="'../views/blocks/dropdown.new.html'"></div>
                 </li>
-              </ul>       
+              </ul>      
               <div ui-include="'../views/blocks/navbar.form.html'"></div>
-              <!-- / -->
             </div>
-
             <ul class="nav navbar-nav ml-auto flex-row">
               <li class="nav-item dropdown pos-stc-xs">
-                <a class="nav-link mr-2" href data-toggle="dropdown">
-                  <i class="material-icons">&#xe7f5;</i>
-                  <span class="label label-sm up warn">3</span>
-                </a>
                 <div ui-include="'../views/blocks/dropdown.notification.html'"></div>
               </li>
               <li class="nav-item dropdown">
@@ -144,7 +162,6 @@
                 </a>
               </li>
             </ul>
-            <!-- / navbar right -->
         </div>
     </div>
     <div class="app-footer">
@@ -166,51 +183,71 @@
     <div class="padding pos-rlt">
       <div>
         <button class="btn btn-sm white pull-right hidden-sm-up" ui-toggle-class="show" target="#inbox-menu"><i class="fa fa-bars"></i></button>
-        <a href class="btn btn-sm white w-xs">Refresh</a>
+        <a href class="btn btn-sm white w-xs">Recargar</a>
       </div>
+      
 
         
 <body>
     <h1>Dispositivos Offline</h1>
     <ul id="offline-list"></ul>
 
-    <script>
-        // Función para cargar la lista de dispositivos offline desde localStorage
-        function cargarDispositivosOffline() {
-            const offlineList = document.getElementById('offline-list');
-            const dispositivosOffline = JSON.parse(localStorage.getItem('dispositivosOffline')) || [];
+   <script>
+    const dispositivos = [
+        "ServidorAeroColima", "ServidorTepeyac", "ServidorMoroleon",
+        "ServidorTacubaya", "ServidorSatelite", "ServidorAzcapotzalco", "ServidorAeropuerto",
+        "ServidorCarrizal", "ServidorHoracio", "ServidorSanManuel", "ServidorPeriferico",
+        "ServidorSamsOaxaca", "ServidorFerrocarril", "ServidorBuenavista", "ServidorMarianoEscobedo",
+        "ServidorLaRaza", "ServidorZitacuaro", "ServidorTlalpan", "ServidorSuperamaVillaHermosa",
+        "ServidorComboCuautitlan", "ServidorSamsCuautitlan1DeMayo",
+        "ServidorCinepolisLeon", "ServidorAlamos",
+        "ServidorAeroCDObregon"
+    ];
 
-            // Limpiar la lista antes de agregar los nuevos elementos
-            offlineList.innerHTML = '';
+    async function obtenerEstadoDispositivo(deviceId) {
+        try {
+            const response = await fetch(`https://mi-servidor-heartbeat-1a3a85a58124.herokuapp.com/api/status/${deviceId}`);
+            if (!response.ok) throw new Error("No responde");
 
-            // Agregar cada dispositivo offline a la lista
-            dispositivosOffline.forEach(deviceId => {
+            const data = await response.json();
+            console.log(`📡 ${deviceId}:`, data);
+
+            return data; // Devuelve el JSON si todo va bien
+        } catch (error) {
+            console.warn(`⚠️ ${deviceId} está offline o no respondió.`);
+            return null; // En caso de error, devuelve null
+        }
+    }
+
+    async function cargarDispositivosOffline() {
+        const offlineList = document.getElementById('offline-list');
+        offlineList.innerHTML = '';
+
+        for (const deviceId of dispositivos) {
+            const data = await obtenerEstadoDispositivo(deviceId);
+            if (!data) {
                 const li = document.createElement('li');
                 li.textContent = deviceId;
                 offlineList.appendChild(li);
-            });
-        }
-
-        // Cargar la lista al cargar la página
-        cargarDispositivosOffline();
-
-        // Escuchar cambios en localStorage para actualizar la lista en tiempo real
-        window.addEventListener('storage', (event) => {
-            if (event.key === 'dispositivosOffline') {
-                cargarDispositivosOffline();
             }
-        });
-    </script>
+        }
+    }
+
+    // Ejecutar al cargar la página
+    cargarDispositivosOffline();
+</script>
+
+
 </body>
 
 
+  <!-- temas map -->
   <div id="switcher">
     <div class="switcher box-color dark-white text-color" id="sw-theme">
       <a href ui-toggle-class="active" target="#sw-theme" class="box-color dark-white text-color sw-btn">
-        <i class="fa fa-gear"></i>
+        <i class="material-icons">settings</i>
       </a>
       <div class="box-header">
-        
         <h2>Temas del mapa</h2>
       </div>
       <div class="box-divider"></div>
@@ -226,7 +263,6 @@
             <i class="green"></i>
             <span class="hidden-folded">Reducir Tamaño</span>
           </label>
-          
         </p>
         <p>Color De Fondo:</p>
         <div data-target="bg" class="row no-gutter text-u-c text-center _600 clearfix">
