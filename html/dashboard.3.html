@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DASHBOARD ACCESSONE </title>
+  <meta charset="utf-8" />
+  <title>Historial</title>
   <meta name="description" content="Admin, Dashboard, Bootstrap, Bootstrap 4, Angular, AngularJS" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimal-ui" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-barstyle" content="black-translucent">
   <link rel="apple-touch-icon" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="../__MACOSX/assets/styles/tablaregistro.css">
   <meta name="apple-mobile-web-app-title" content="Flatkit">
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="shortcut icon" sizes="196x196" href="../assets/images/logo.png">
@@ -20,16 +20,47 @@
   <link rel="stylesheet" href="../assets/bootstrap/dist/css/bootstrap.min.css" type="text/css" />
   <link rel="stylesheet" href="../assets/styles/app.css" type="text/css" />
   <link rel="stylesheet" href="../assets/styles/font.css" type="text/css" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  
+   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <style>
-    #map { height: 700px; }
-  </style>
+</head>
+<style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #dc2626;
+            margin-bottom: 20px;
+        }
+
+        #offline-list {
+            list-style: none;
+            padding: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #offline-list li {
+            background-color: #fee2e2;
+            color: #7f1d1d;
+            font-size: 1.25rem;
+            margin: 10px 0;
+            padding: 15px 20px;
+            border-left: 5px solid #dc2626;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
   <div class="app" id="app">
-<div id="aside" class="app-aside modal fade folded md show-text nav-dropdown">
+  <div id="aside" class="app-aside modal fade folded md show-text nav-dropdown">
   <div class="left navside black dk" layout="column">
     <div class="navbar no-radius">
       <a class="navbar-brand">
@@ -43,7 +74,8 @@
         <ul class="nav" ui-nav>
           <li class="nav-header hidden-folded">
             <small class="text-muted">Opciones</small>
-          </li>       
+          </li>
+          
           <li>
             <a href="dashboard.3.html">
               <span class="nav-icon">
@@ -89,12 +121,15 @@
     </div>
   </div>
 </div>
-    <div id="content" class="app-content box-shadow-z3" role="main">
+<!-- / aside -->
+  <div id="content" class="app-content box-shadow-z0" role="main">
     <div class="app-header white box-shadow">
         <div class="navbar navbar-toggleable-sm flex-row align-items-center">
             <a data-toggle="modal" data-target="#aside" class="hidden-lg-up mr-3">
               <i class="material-icons">&#xe5d2;</i>
             </a>
+
+            <!-- Page title - Bind to $state's title -->
             <div class="mb-0 h5 no-wrap" ng-bind="$state.current.data.title" id="pageTitle"></div>
             <div class="collapse navbar-collapse" id="collapse">
               <ul class="nav navbar-nav mr-auto">
@@ -103,7 +138,7 @@
                     <i class="material-icons">directions_car</i>
                   <span>Parking México</span>
                   </a>
-                  <div ui-include="'../views/blocks/dropdown.new.html'"></div>
+                   <div ui-include="'../views/blocks/dropdown.new.html'"></div>
                 </li>
               </ul>      
               <div ui-include="'../views/blocks/navbar.form.html'"></div>
@@ -129,74 +164,85 @@
             </ul>
         </div>
     </div>
-    <!-- / Pie de pagina -->
     <div class="app-footer">
       <div class="p-2 text-xs">
         <div class="pull-right text-muted py-1">
-          &copy; Copyright <strong>AccessOne PARKINGMEXICO</strong> <span class="hidden-xs-down">- v2.1</span>
+          &copy; Copyright <strong>AccessOne</strong> <span class="hidden-xs-down">- Built with Love v1.0</span>
           <a ui-scroll-to="content"><i class="fa fa-long-arrow-up p-x-sm"></i></a>
         </div>
         <div class="nav">
-          <a class="nav-link" href="https://www.accessone.com.mx/contacto.html">Acerca de</a>
-          <a class="nav-link" href="https://www.accessone.com.mx">Conocer</a>
+          <a class="nav-link" href="https://www.accessone.com.mx">Acerca de</a>
+          <a class="nav-link" href="https://www.accessone.com.mx"></a>
         </div>
       </div>
     </div>
     <div ui-view class="app-body" id="view">
-    <!-- TEXTO SUPERIOR PAGINA LEVEL 2-->
-<div class="dker">
-  <div class="tab-content tab-alt">
-    <div class="tab-pane in active" id="world">
-      <div class="padding">
-        <div class="row-col">
-          <div class="col-xs-4 v-m">
-            <h1 id="total-count" class="_800 l-s-n-4x inline m-r-sm">0</h1>
-            <span class="inline l-h-1x">
-              DISPOSITIVOS <br>
-              <small class="text-muted">Totales en México</small>
-            </span>
-          </div>
-          <div class="col-xs-4 v-m">
-            <h1 id="online-count" class="_800 l-s-n-4x inline m-r-sm text-primary">0</h1>
-            <span class="inline l-h-1x">
-              En Línea  <br>
-              <small class="text-muted">Totales en México</small>
-            </span>
-          </div>
-          <div class="col-xs-4 v-m">
-            <h1 id="offline-count" class="_800 l-s-n-4x text-white text-shadow inline m-r-sm">0</h1>
-            <span class="inline l-h-1x">
-              Fuera de Línea  <br>
-              <small class="text-muted">Totales en México</small>
-            </span>
-          </div>
-        </div>
-      </div>
-    
-  
 
-
-
-    <div flex-no-shrink>
-      <div ui-include="'../views/blocks/aside.top.1.html'"></div>
-    </div>
-  </div>
-</div>
-  <div id="map"></div>
 <div class="row-col">
-    <div class="col-xs-3 v-m nav-active-primary">
-      <div class="p-a">
-        <ul class="nav">
-        </ul>
+  <div class="col-sm w w-auto-xs light lt bg-auto">
+    <div class="padding pos-rlt">
+      <div>
+        <button class="btn btn-sm white pull-right hidden-sm-up" ui-toggle-class="show" target="#inbox-menu"><i class="fa fa-bars"></i></button>
+        <a href class="btn btn-sm white w-xs">Recargar</a>
       </div>
-    </div>
-    <div class="col-xs-6 v-m text-center text-sm text-muted p-a">DashBoard de equipos de estacionamiento actualizado a Marzo de 2025</div>
-    <div class="col-xs-3 v-m text-right">
-      <span ui-jp="sparkline" ui-refresh="app.setting.color" ui-options="[70,30], {type:'pie', height:22, sliceColors:['#0cc2aa','transparent']}" class="sparkline inline m-r"></span>
-      <span ui-jp="sparkline" ui-refresh="app.setting.color" ui-options="[30,70], {type:'pie', height:22, sliceColors:['#0cc2aa','transparent']}" class="sparkline inline m-r"></span>
-    </div>
-  </div>
-</div>
+      
+
+        
+<body>
+    <h1>Dispositivos Offline</h1>
+    <ul id="offline-list"></ul>
+
+   <script>
+    const dispositivos = [
+        "ServidorAeroColima", "ServidorTepeyac", "ServidorMoroleon",
+        "ServidorTacubaya", "ServidorSatelite", "ServidorAzcapotzalco", "ServidorAeropuerto",
+        "ServidorCarrizal", "ServidorHoracio", "ServidorSanManuel", "ServidorPeriferico",
+        "ServidorSamsOaxaca", "ServidorFerrocarril", "ServidorBuenavista", "ServidorMarianoEscobedo",
+        "ServidorLaRaza", "ServidorZitacuaro", "ServidorTlalpan", "ServidorSuperamaVillaHermosa",
+        "ServidorComboCuautitlan", "ServidorSamsCuautitlan1DeMayo",
+        "ServidorCinepolisLeon", "ServidorAlamos",
+        "ServidorAeroCDObregon", "ServidorComitan", "InterfonE1", "Entrada1", "InterfonS1", "Salida1", "InterfonC1", "Cajero1"
+        "InterfonEntradaCDObregon", "EntradaCDObregon", "InterfonSalidaCDObregon", "SalidaCDObregon", "InterfonCajeroCDObregon", "CajeroCDObregon"
+    ];
+
+    async function obtenerEstadoDispositivo(deviceId) {
+        try {
+            const response = await fetch(`https://mi-servidor-heartbeat-1a3a85a58124.herokuapp.com/api/status/${deviceId}`);
+            if (!response.ok) throw new Error("No responde");
+
+            const data = await response.json();
+            console.log(`📡 ${deviceId}:`, data);
+
+            return data; // Devuelve el JSON si todo va bien
+        } catch (error) {
+            console.warn(`⚠️ ${deviceId} está offline o no respondió.`);
+            return null; // En caso de error, devuelve null
+        }
+    }
+
+    async function cargarDispositivosOffline() {
+        const offlineList = document.getElementById('offline-list');
+        offlineList.innerHTML = '';
+
+        for (const deviceId of dispositivos) {
+            const data = await obtenerEstadoDispositivo(deviceId);
+            if (!data) {
+                const li = document.createElement('li');
+                li.textContent = deviceId;
+                offlineList.appendChild(li);
+            }
+        }
+    }
+
+    // Ejecutar al cargar la página
+    cargarDispositivosOffline();
+</script>
+
+
+
+</body>
+
+
   <!-- temas map -->
   <div id="switcher">
     <div class="switcher box-color dark-white text-color" id="sw-theme">
@@ -219,7 +265,6 @@
             <i class="green"></i>
             <span class="hidden-folded">Reducir Tamaño</span>
           </label>
-          
         </p>
         <p>Color De Fondo:</p>
         <div data-target="bg" class="row no-gutter text-u-c text-center _600 clearfix">
@@ -242,175 +287,7 @@
         </div>
       </div>
     </div>
-  </div>
-  
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script>
-// Inicializar el mapa
-const map = L.map('map').setView([19.7027, -101.1827], 6);
-
-// Agregar capa de mapa base
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-}).addTo(map);
-
-// Objeto para almacenar los marcadores
-const markers = {};
-
-// Lista de dispositivos monitoreados
-const dispositivos = [
-    "ServidorAeroColima", "ServidorTepeyac", "ServidorMoroleon",
-    "ServidorTacubaya", "ServidorSatelite", "ServidorAzcapotzalco", "ServidorAeropuerto",
-    "ServidorCarrizal", "ServidorHoracio", "ServidorSanManuel", "ServidorPeriferico",
-    "ServidorSamsOaxaca", "ServidorFerrocarril", "ServidorBuenavista", "ServidorMarianoEscobedo",
-    "ServidorLaRaza", "ServidorZitacuaro", "ServidorTlalpan", "ServidorSuperamaVillaHermosa",
-    "ServidorComboCuautitlan", "ServidorSamsCuautitlan1DeMayo",
-    "ServidorCinepolisLeon", "ServidorAlamos",
-    "ServidorAeroCDObregon", "ServidorComitan", "InterfonE1", "Entrada1", "InterfonS1", "Salida1", "InterfonC1", "Cajero1",
-    "InterfonEntradaCDObregon", "EntradaCDObregon", "InterfonSalidaCDObregon", "SalidaCDObregon", "InterfonCajeroCDObregon", "CajeroCDObregon"
-];
-
-// Fijar el total de dispositivos según la cantidad en la lista
-const totalDispositivos = dispositivos.length;
-document.getElementById("total-count").textContent = totalDispositivos;
-
-// Estado previo de cada dispositivo
-const estadoAnterior = {};
-
-// Función para obtener el estado del dispositivo desde el servidor
-async function obtenerEstadoDispositivo(deviceId) {
-    try {
-        const response = await fetch(`https://mi-servidor-heartbeat-1a3a85a58124.herokuapp.com/api/status/${deviceId}`);
-        if (!response.ok) throw new Error("Dispositivo no encontrado");
-
-        const data = await response.json();
-        console.log(`📡 Dispositivo ${deviceId}:`, data);
-
-        const nuevoEstado = data.status; // "online" o "offline"
-        const lat = data.latLng.lat;
-        const lng = data.latLng.lng;
-
-        // Si el estado cambia, mostramos notificación
-        if (estadoAnterior[deviceId] !== undefined && estadoAnterior[deviceId] !== nuevoEstado) {
-            if (nuevoEstado === "offline") {
-                mostrarNotificacionOffline(deviceId);
-            } else {
-                mostrarNotificacionOnline(deviceId);
-            }
-        }
-
-        // Guardamos el nuevo estado
-        estadoAnterior[deviceId] = nuevoEstado;
-
-        // Actualizar el marcador en el mapa
-        actualizarMarcador(deviceId, lat, lng, nuevoEstado);
-
-        // Actualizar contadores en tiempo real
-        actualizarContadores();
-
-    } catch (error) {
-        console.error(`Error al obtener estado de ${deviceId}:`, error);
-    }
-}
-
-// Notificación cuando un dispositivo se pone OFFLINE
-function mostrarNotificacionOffline(deviceId) {
-    const audioOffline = new Audio('../assets/images/alerta.mp3'); // 🔊 Sonido para OFFLINE
-    audioOffline.play();  
-
-    Swal.fire({
-        title: "⚠️ Dispositivo fuera de línea",
-        text: `El dispositivo "${deviceId}" se ha desconectado.`,
-        icon: "warning",
-        confirmButtonText: "Entendido",
-        timer: 30000,
-        timerProgressBar: true
-    });
-}
-
-// Notificación cuando un dispositivo vuelve ONLINE
-function mostrarNotificacionOnline(deviceId) {
-    const audioOnline = new Audio('../assets/images/alertaoffline.mp3'); // 🔊 Sonido para ONLINE
-    audioOnline.play();  
-
-    Swal.fire({
-        title: "✅ Dispositivo en línea",
-        text: `El dispositivo "${deviceId}" se ha reconectado.`,
-        icon: "success",
-        confirmButtonText: "Entendido",
-        timer: 30000,
-        timerProgressBar: true
-    });
-}
-
-// Función para actualizar el marcador en el mapa
-function actualizarMarcador(deviceId, lat, lng, status) {
-    const nuevoColor = status === "online" ? "green" : "red";
-
-    if (markers[deviceId]) {
-        // Si el popup está abierto, lo cerramos antes de actualizar
-        if (markers[deviceId].isPopupOpen()) {
-            markers[deviceId].closePopup();
-        }
-
-        // Actualizar la posición y el color del marcador
-        markers[deviceId].setLatLng([lat, lng]);
-        markers[deviceId].setStyle({
-            fillColor: nuevoColor
-        });
-
-        // Actualizar contenido del popup
-        markers[deviceId].setPopupContent(`Dispositivo: ${deviceId}<br>Estado: ${status}`);
-
-    } else {
-        // Si no existe el marcador, crearlo
-        markers[deviceId] = L.circleMarker([lat, lng], {
-            radius: 8,
-            fillColor: nuevoColor,
-            color: "#000",
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.8
-        }).addTo(map);
-
-        // Asignar popup con la información actualizada
-        markers[deviceId].bindPopup(`Dispositivo: ${deviceId}<br>Estado: ${status}`);
-    }
-}
-
-// Función para actualizar los contadores de dispositivos en línea y fuera de línea
-function actualizarContadores() {
-    const online = Object.values(markers).filter(m => m.options.fillColor === "green").length;
-    const offline = totalDispositivos - online;
-
-    document.getElementById("online-count").textContent = online;
-    document.getElementById("offline-count").textContent = offline;
-
-    // Obtener la lista de dispositivos offline
-    const dispositivosOffline = dispositivos.filter(deviceId => {
-        const marker = markers[deviceId];
-        return marker && marker.options.fillColor === "red";
-    });
-
-    // Guardar la lista de dispositivos offline en localStorage
-    localStorage.setItem('dispositivosOffline', JSON.stringify(dispositivosOffline));
-}
-
-// Pedir permiso para notificaciones al cargar la página
-document.addEventListener("DOMContentLoaded", () => {
-    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-        Notification.requestPermission();
-    }
-});
-
-// Intervalo para actualizar el estado de los dispositivos cada 5 segundos
-setInterval(() => {
-    dispositivos.forEach(obtenerEstadoDispositivo);
-}, 5000);
-
-</script>
-
+    
   </script>
   <script src="../libs/jquery/jquery/dist/jquery.js"></script>
   <script src="../libs/jquery/tether/dist/js/tether.min.js"></script>
@@ -432,6 +309,5 @@ setInterval(() => {
   <script src="scripts/app.js"></script>
   <script src="../libs/jquery/jquery-pjax/jquery.pjax.js"></script>
   <script src="scripts/ajax.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
