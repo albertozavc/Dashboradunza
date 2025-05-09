@@ -201,8 +201,12 @@
         "ServidorLaRaza", "ServidorZitacuaro", "ServidorTlalpan", "ServidorSuperamaVillaHermosa",
         "ServidorComboCuautitlan", "ServidorSamsCuautitlan1DeMayo",
         "ServidorCinepolisLeon", "ServidorAlamos",
-        "ServidorAeroCDObregon", "ServidorComitan", "InterfonE1", "Entrada1", "InterfonS1", "Salida1", "InterfonC1", "Cajero1"
-        "InterfonEntradaCDObregon", "EntradaCDObregon", "InterfonSalidaCDObregon", "SalidaCDObregon", "InterfonCajeroCDObregon", "CajeroCDObregon"
+        "ServidorAeroCDObregon", "ServidorComitan", "InterfonE1", "Entrada1", "InterfonS1", "Salida1", "InterfonC1", "Cajero1",
+        "InterfonEntradaCDObregon", "EntradaCDObregon", "InterfonSalidaCDObregon", "SalidaCDObregon", "InterfonCajeroCDObregon", "CajeroCDObregon",
+        "InterfonEntradaTacubaya", "EntradaTacubaya", "InterfonSalidaTacubaya", "SalidaTacubaya",
+    "InterfonEntrada1Satelite", "Entrada1Satelite", "PensionesE1Satelite", "InterfonEntrada2", "Entrada2Satelite", "PensionesE2Satelite", "InterfonEntrada3", "Entrada3Satelite", "PensionesE3Satelite", "InterfonEntrada4", "Entrada4Satelite", "PensionesE4Satelite", "InterfonSalida1Satelite", "Salida1Satelite", "PensionesS1Satelite", "InterfonSalida2", "Salida2Satelite", "PensionesS2Satelite", "InterfonSalida3", "Salida3Satelite", "PensionesS3Satelite", "InterfonSalida4", "Salida4Satelite", "PensionesS4Satelite", "CajeroWalmart1Satelite", "InterfonCajeroWalmart1Satelite", "CajeroWalmart2Satelite", "InterfonCajeroWalmart2Satelite", "CajeroVipsSatelite", "InterfonCajeroVipsSatelite", "CajeroSuburbiaSatelite", "InterfonCajeroSuburbiaSatelite",
+    "InterfonEntradaHoracio", "EntradaHoracio", "EntradaPensionesHoracio", "InterfonSalidaHoracio", "SalidaHoracio", "SalidaPensionesHoracio"
+
     ];
 
     async function obtenerEstadoDispositivo(deviceId) {
@@ -226,11 +230,12 @@
 
         for (const deviceId of dispositivos) {
             const data = await obtenerEstadoDispositivo(deviceId);
-            if (!data) {
-                const li = document.createElement('li');
-                li.textContent = deviceId;
-                offlineList.appendChild(li);
-            }
+            if (!data || data.status === "offline" || data.online === false) {
+    const li = document.createElement('li');
+    li.textContent = deviceId;
+    offlineList.appendChild(li);
+}
+
         }
     }
 
